@@ -174,7 +174,7 @@ gulp.task('html', ['styles'], function () {
 ////////////////////////////////////////
 gulp.task('extras', function () {
   return gulp.src([
-    'app/*.*',
+    'app/**/*.*',
     '!app/*.html'
   ], {
     dot: true
