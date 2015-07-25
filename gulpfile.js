@@ -138,7 +138,12 @@ gulp.task('tdd', function (done) {
 gulp.task('browserify', function(){
   return browserify({
       entries: ['./app/scripts/main.js'],
-      debug: true
+      debug: true,
+      noParse: [
+        //avoid cannot find module errors
+        //issue #818 in p5
+        require.resolve('p5'),
+     ]
     })
     .transform(babelify)
     .bundle()
