@@ -14,12 +14,10 @@ function sketch(s) {
   let video;
   let t = 0;
 
-  s.preload = function() {
-
-  };
-
   s.setup = function() {
-    let canvas = s.createCanvas(640, 480);
+    // turn off hidpi for now to make pixel math easier
+    s.devicePixelScaling(false);
+    let canvas = s.createCanvas(canvasWrap.offsetWidth, canvasWrap.offsetHeight);
     canvas.parent(canvasWrap);
 
     video = s.createVideo(['assets/rubiks.ogg']);
@@ -27,30 +25,38 @@ function sketch(s) {
     video.loop();
     video.loadPixels();
 
+    s.translate(s.width/2, s.height/2);
+    s.scale(1,-1);
+
   };
 
   s.draw = function() {
 
     video.loadPixels();
-    s.loadPixels();
 
     // grab middle strip of pixels
-    for (let y = 0, h = video.height; y < h; y += 1) {
-      let pixel = video.get(video.width/2, y);
-      s.set(t,y, pixel);
+    let vh = video.height;
+    let vw = video.width;
+    let sh = s.height;
+
+    for (let y = 0; y < vh && y < sh/2; y += 1) {
+
+      // grab colors
+      let [r, g, b, a] = video.get(vw/2, y);
+
+      // mutate
+      r = Math.floor(r + s.mouseY) % 255;
+      g = Math.floor(g + s.mouseX) % 255;
+
+      // draw on screen radially
+      let color = [r,g,b,a];
+      s.stroke(color);
+      s.fill(color);
+      s.rect((y+50) * Math.cos(t), (y+50) * Math.sin(t), 10, 10);
     }
 
-    s.updatePixels();
-
-    t = (t + 1) % s.width;
-
-
-    // for (let i = 0, l = video.pixels.length; i + 4 < l; i += 4) {
-    //   video.pixels[i] = (video.pixels[i] + 100) % 255;
-    // }
-
-    // video.updatePixels();
-    // s.image(video, 0, 0);
+    // update time
+    t = t + 1/90 * Math.PI;
 
   };
 
